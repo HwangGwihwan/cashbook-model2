@@ -1,4 +1,12 @@
+<%@ page import="dto.Receit"%>
+<%@ page import="dto.Cash"%>
+<%@ page import="java.text.DecimalFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	int cashNo = (int)request.getAttribute("cashNo");
+	Cash cash = (Cash)request.getAttribute("cash");
+	Receit receit = (Receit)request.getAttribute("receit");
+%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -108,17 +116,17 @@
 			</tr>
 		</table>
 		<div>
-			<a href="/cashbook/dateList.jsp?date=<%=cash.getCash_date()%>">목록으로</a>
-			<a href="/cashbook/cash/updateCashForm.jsp?cashNo=<%=cashNo%>">수정</a>
-			<a href="/cashbook/cash/deleteCash.jsp?cashNo=<%=cashNo%>&cashDate=<%=cash.getCash_date()%>">삭제</a>
+			<a href="<%=request.getContextPath()%>/dateList?date=<%=cash.getCash_date()%>">목록으로</a>
+			<a href="<%=request.getContextPath()%>/updateCash?cashNo=<%=cashNo%>">수정</a>
+			<a href="<%=request.getContextPath()%>/deleteCash?cashNo=<%=cashNo%>&cashDate=<%=cash.getCash_date()%>">삭제</a>
 			<%
 				if (receit == null) { // 영수증이 없을때만 영수증 등록 뜨게
 			%>
-					<a href="/cashbook/cash/insertReceitForm.jsp?cashNo=<%=cashNo%>">영수증 등록</a>
+					<a href="<%=request.getContextPath()%>/insertReceit?cashNo=<%=cashNo%>">영수증 등록</a>
 			<%
 				} else { // 영수증이 있을때는 영수증 삭제만 뜨게
 			%>
-					<a href="/cashbook/cash/deleteReceit.jsp?cashNo=<%=cashNo%>&filename=<%=receit.getFilename()%>">영수증 삭제</a>
+					<a href="<%=request.getContextPath()%>/deleteReceit?cashNo=<%=cashNo%>&filename=<%=receit.getFilename()%>">영수증 삭제</a>
 			<%	
 				}
 			%>
@@ -133,7 +141,7 @@
 			<%
 				} else {
 			%>
-					<img src="/cashbook/upload/<%=receit.getFilename()%>">
+					<img src="<%=request.getContextPath()%>/upload/<%=receit.getFilename()%>">
 			<%
 				}
 			%>

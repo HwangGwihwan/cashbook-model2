@@ -1,6 +1,5 @@
 package controller;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,13 +10,10 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 import dao.CashDao;
-import dao.ReceitDao;
-import dto.Cash;
-import dto.Receit;
 
-@WebServlet("/cashOne")
-public class CashOneController extends HttpServlet {
-	
+@WebServlet("/deleteCash")
+public class DeleteCashController extends HttpServlet {
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		String login = (String)(session.getAttribute("login"));
@@ -28,19 +24,14 @@ public class CashOneController extends HttpServlet {
 		}
 		
 		int cashNo = Integer.parseInt(request.getParameter("cashNo"));
-		System.out.println("CashOneController.doGet#cashNo: " + cashNo);
+		String cashDate = request.getParameter("cashDate");
+		
+		System.out.println("DeleteCashController.doGet#cashNo: " + cashNo);
+		System.out.println("DeleteCashController.doGet#cashDate: " + cashDate);
 		
 		CashDao cashDao = new CashDao();
-		Cash cash = cashDao.selectCashOne(cashNo);
+		cashDao.deleteCashOne(cashNo);
 		
-		ReceitDao receitDao = new ReceitDao();
-		Receit receit = receitDao.selectReceitOne(cashNo);
-		
-		request.setAttribute("cashNo", cashNo);
-		request.setAttribute("cash", cash);
-		request.setAttribute("receit", receit);
-		
-		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/view/cashOne.jsp");
-		rd.forward(request, response);
+		response.sendRedirect(request.getContextPath() + "/dateList?date=" + cashDate);
 	}
 }

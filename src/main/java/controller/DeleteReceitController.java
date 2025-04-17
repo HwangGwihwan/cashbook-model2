@@ -1,6 +1,5 @@
 package controller;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -8,16 +7,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.io.File;
 import java.io.IOException;
 
-import dao.CashDao;
 import dao.ReceitDao;
-import dto.Cash;
-import dto.Receit;
 
-@WebServlet("/cashOne")
-public class CashOneController extends HttpServlet {
-	
+
+@WebServlet("/deleteReceit")
+public class DeleteReceitController extends HttpServlet {
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		String login = (String)(session.getAttribute("login"));
@@ -28,19 +26,22 @@ public class CashOneController extends HttpServlet {
 		}
 		
 		int cashNo = Integer.parseInt(request.getParameter("cashNo"));
-		System.out.println("CashOneController.doGet#cashNo: " + cashNo);
+		String filename = request.getParameter("filename");
 		
-		CashDao cashDao = new CashDao();
-		Cash cash = cashDao.selectCashOne(cashNo);
+		System.out.println("DeleteReceitController.doGet#cashNo: " + cashNo);
+		System.out.println("DeleteReceitController.doGet#filename: " + filename);
 		
+		// db삭제
 		ReceitDao receitDao = new ReceitDao();
-		Receit receit = receitDao.selectReceitOne(cashNo);
+		receitDao.deleteReceitOne(cashNo);
 		
-		request.setAttribute("cashNo", cashNo);
-		request.setAttribute("cash", cash);
-		request.setAttribute("receit", receit);
+		// 파일 삭제
+		String path = request.getServletContext().getRealPath("upload");
+		File file = new File(path, filename); // new File 경로에 파일이 없으면 빈파일을 생성
+		if (file.exists()) { // 빈파일이 아니라면
+			file.delete();
+		}
 		
-		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/view/cashOne.jsp");
-		rd.forward(request, response);
+		response.sendRedirect(request.getContextPath() + "/cashOne?cashNo=" + cashNo);
 	}
 }

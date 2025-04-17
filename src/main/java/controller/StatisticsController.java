@@ -9,15 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import dao.CashDao;
-import dao.ReceitDao;
-import dto.Cash;
-import dto.Receit;
 
-@WebServlet("/cashOne")
-public class CashOneController extends HttpServlet {
-	
+@WebServlet("/statistics")
+public class StatisticsController extends HttpServlet {
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		String login = (String)(session.getAttribute("login"));
@@ -27,20 +26,22 @@ public class CashOneController extends HttpServlet {
 			return;
 		}
 		
-		int cashNo = Integer.parseInt(request.getParameter("cashNo"));
-		System.out.println("CashOneController.doGet#cashNo: " + cashNo);
+		int year = 2025;
+		if (request.getParameter("year") != null) {
+			year = Integer.parseInt(request.getParameter("year"));
+		}
 		
 		CashDao cashDao = new CashDao();
-		Cash cash = cashDao.selectCashOne(cashNo);
+		ArrayList<HashMap<String, Object>> totalList = cashDao.totalAmount();
+		ArrayList<HashMap<String, Object>> yearTotalList = cashDao.yearTotalAmount(year);
+		ArrayList<HashMap<String, Object>> monthTotalList = cashDao.monthTotalAmount(year);
 		
-		ReceitDao receitDao = new ReceitDao();
-		Receit receit = receitDao.selectReceitOne(cashNo);
+		request.setAttribute("year", year);
+		request.setAttribute("totalList", totalList);
+		request.setAttribute("yearTotalList", yearTotalList);
+		request.setAttribute("monthTotalList", monthTotalList);
 		
-		request.setAttribute("cashNo", cashNo);
-		request.setAttribute("cash", cash);
-		request.setAttribute("receit", receit);
-		
-		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/view/cashOne.jsp");
+		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/view/statistics.jsp");
 		rd.forward(request, response);
 	}
 }
